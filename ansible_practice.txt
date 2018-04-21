@@ -1,0 +1,62 @@
+Assigning connection for different environment like (dev,prod,uat) :
+------------------------------------------------------------------
+step1
+lauch one centos, two ubuntu
+ubuntu master
+ubuntu node1
+centos node2
+
+Step2:
+go to docs.ansible.com
+ubuntu-->install ansible(http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#latest-releases-via-apt-ubuntu)
+
+In masterubuntu :
+ 1  1  sudo apt-get install software-properties-common
+    2  sudo apt-get update
+    3  sudo apt-get install ansible
+    4  ansible -v
+    5  ansible -version
+    6  sudo apt-get install ansible
+    7  cd /etc/ansible
+    8  ls
+    9  ssh-keygen
+   10  cd /root/.ssh
+   11  ls
+   12  cat id_rsa.pub
+
+In node1 :
+ 1  1  cd .ssh
+    2  ls
+    3  vi authorized_keys(copy key from master and paste in vi editor)	
+    4  vi /etc/ssh/sshd_config(permit root login : yes, password auth : yes)
+    5  service sshd restart
+
+Go to master
+   1  cd /etc/ansible/
+   2  ls
+   3  vim hosts
+      (( [local]
+         ubuntumaster ansible_connection=local
+         [dev]
+         node2ubuntu ansible_host=35.161.118.38))
+   4 ansible -m ping all (to check whether connection is working fine or not which was connected from node1 )
+
+Same as above applicable for node with minor changes in cat id_rsa.pub:
+
+In node2 :
+    1 passwd root
+    2  vim /etc/ssh/sshd_config
+    3  service ssh restart (or)
+    4  service sshd restart
+   
+go to master
+    1  vi /etc/ssh/sshd_config
+    2  scp /root/.ssh/id_rsa.pub  root@35.161.118.38:/root/.ssh
+__________________________________________________________________________________________________________________________
+
+How to Playbook in ansible :
+---------------------------
+
+In master server : mkdir 
+cd mkdir
+vi file.yml (code wriiten in the yaml language i.e. to connect either all environments or we can also filter env wise such as dev,QA,prod, Then it will applicable to all the nodes present in particular env)
